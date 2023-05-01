@@ -16,10 +16,8 @@ const MapModal = ({ isOpen, setClose, markerPosition, createMarker }) => {
     e.preventDefault()
 
     const {
-      target: { name },
+      target: { name, description, positionCount, positionType },
     } = e
-
-    console.log(name.value)
 
     createMarker({ name: name.value, position: markerPosition })
 
@@ -35,6 +33,28 @@ const MapModal = ({ isOpen, setClose, markerPosition, createMarker }) => {
             <FormGroup>
               <Label for='name'>Name</Label>
               <Input type='text' name='name' id='name' placeholder='Enter marker name' />
+            </FormGroup>
+            <FormGroup>
+              <Label for='description'>Description</Label>
+              <Input type='textarea' name='description' id='description' placeholder='Enter description here' />
+            </FormGroup>
+            <FormGroup>
+              <Label for='positionCount'>Position Count</Label>
+              <Input type='number' name='positionCount' id='positionCount' placeholder='Enter position count'/>
+            </FormGroup>
+            <FormGroup>
+              <Label for='positionType'>Position Type</Label>
+              <Input type='select' name='positionType' style={{display: 'block', borderRadius: '6px', borderColor: 'lightgrey', width: '100%', padding: '8px 0'}}>
+                <option value='1'>
+                  Zhoska position
+                </option>
+                <option value='2'>
+                  Slaba position
+                </option>
+                <option value='3'>
+                  Huyova position
+                </option>
+              </Input>
             </FormGroup>
           </ModalBody>
           <ModalFooter>
