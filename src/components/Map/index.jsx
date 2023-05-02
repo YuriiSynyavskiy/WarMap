@@ -16,19 +16,19 @@ const customIcon = new L.Icon({
   shadowAnchor: null,
 })
 
-import MapModal from '../AddMarkerModal'
+import PositionModal from '../PositionModal'
 
 import './index.css'
 
 const MIN_ZOOM = 3
 
-const MapEvents = ({ map, setPosition, setModalOpen, setMarkerPosition }) => {
+const MapEvents = ({ map, setMouseCoords, setModalOpen, setNewPositionCoords }) => {
   useMapEvents({
     mousemove(e) {
-      setPosition({ lat: e.latlng.lat, lng: e.latlng.lng })
+      setMouseCoords({ lat: e.latlng.lat, lng: e.latlng.lng })
     },
     click(e) {
-      setMarkerPosition({ lat: e.latlng.lat, lng: e.latlng.lng })
+      setNewPositionCoords({ lat: e.latlng.lat, lng: e.latlng.lng })
       setModalOpen(true)
     },
     zoom(e) {
@@ -41,17 +41,17 @@ const MapEvents = ({ map, setPosition, setModalOpen, setMarkerPosition }) => {
 function WarMap() {
   const map = useRef()
 
-  const [position, setPosition] = useState({ lat: 51.505, lng: -0.09 })
-  const [markerPosition, setMarkerPosition] = useState()
+  const [mouseCoords, setMouseCoords] = useState({ lat: 51.505, lng: -0.09 })
+  const [newPositionCoords, setNewPositionCoords] = useState()
   const [modalOpen, setModalOpen] = useState(false)
-  const [markers, setMarkers] = useState([])
+  const [positions, setPositions] = useState([])
 
   const closeModal = () => setModalOpen(false)
 
-  const createMarker = (newMarker) => setMarkers((prevMarkers) => [...prevMarkers, newMarker])
+  const createMarker = (newMarker) => setPositions((prevMarkers) => [...prevMarkers, newMarker])
 
-  const xLat = position.lat.toFixed(3)
-  const yLng = position.lng.toFixed(3)
+  const xLat = mouseCoords.lat.toFixed(3)
+  const yLng = mouseCoords.lng.toFixed(3)
 
   return (
     <div>
@@ -67,22 +67,22 @@ function WarMap() {
           url='http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}'
           subdomains={['mt1', 'mt2', 'mt3']}
         />
-        {markers.map(({ name, position }) => (
+        {positions.map(({ name, position }) => (
           <Marker icon={customIcon} key={Math.random()} position={[position.lat, position.lng]}>
             <Popup>{name}</Popup>
           </Marker>
         ))}
         <MapEvents
           map={map}
-          setPosition={setPosition}
+          setMouseCoords={setMouseCoords}
           setModalOpen={setModalOpen}
-          setMarkerPosition={setMarkerPosition}
+          setNewPositionCoords={setNewPositionCoords}
         />
       </MapContainer>
-      <MapModal
+      <PositionModal
         isOpen={modalOpen}
-        setClose={closeModal}
-        markerPosition={markerPosition}
+        closeModal={closeModal}
+        positionCoords={newPositionCoords}
         createMarker={createMarker}
       />
     </div>
