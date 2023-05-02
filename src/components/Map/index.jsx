@@ -2,21 +2,9 @@ import React, { useRef, useState, useEffect } from 'react'
 import { MapContainer, Marker, Popup, TileLayer, useMapEvents } from 'react-leaflet'
 import L from 'leaflet'
 
-const customIcon = new L.Icon({
-  iconUrl:
-    'https://www.simplilearn.com/ice9/free_resources_article_thumb/what_is_image_Processing.jpg',
-  iconRetinaUrl:
-    'https://www.simplilearn.com/ice9/free_resources_article_thumb/what_is_image_Processing.jpg',
-  iconAnchor: [15, 15],
-  popupAnchor: [0, -12],
-  iconSize: new L.Point(32, 32),
-  className: 'leaflet-div-icon',
-  shadowUrl: null,
-  shadowSize: null,
-  shadowAnchor: null,
-})
-
 import PositionModal from '../PositionModal'
+
+import images, { enemyImages } from '../../images'
 
 import './index.css'
 
@@ -78,8 +66,18 @@ function WarMap() {
           url='http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}'
           subdomains={['mt1', 'mt2', 'mt3']}
         />
-        {positions.map(({ name, type, lat, lng }) => (
-          <Marker icon={customIcon} key={Math.random()} position={[lat, lng]}>
+        {positions.map(({ name, type, lat, lng, enemy }) => (
+          <Marker icon={new L.Icon({
+            iconUrl: enemy ? enemyImages[type].image : images[type].image,
+            iconRetinaUrl: enemy ? enemyImages[type].image : images[type].image,
+            iconAnchor: [15, 15],
+            popupAnchor: [0, -12],
+            iconSize: new L.Point(60, 40),
+            className: 'leaflet-div-icon',
+            shadowUrl: null,
+            shadowSize: null,
+            shadowAnchor: null,
+          })} key={Math.random()} position={[lat, lng]}>
             <Popup>{name}</Popup>
           </Marker>
         ))}
