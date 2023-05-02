@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import { MapContainer, Marker, Popup, TileLayer, useMapEvents } from 'react-leaflet'
 import L from 'leaflet'
 
@@ -41,7 +41,7 @@ const MapEvents = ({ map, setMouseCoords, setModalOpen, setNewPositionCoords }) 
 function WarMap() {
   const map = useRef()
 
-  const [mouseCoords, setMouseCoords] = useState({ lat: 51.505, lng: -0.09 })
+  const [mouseCoords, setMouseCoords] = useState({ lat: 47.69, lng: 37.83 })
   const [newPositionCoords, setNewPositionCoords] = useState()
   const [modalOpen, setModalOpen] = useState(false)
   const [positions, setPositions] = useState([])
@@ -52,11 +52,22 @@ function WarMap() {
 
   const xLat = mouseCoords.lat.toFixed(3)
   const yLng = mouseCoords.lng.toFixed(3)
+  
+  useEffect(() => {
+    // Update the document title using the browser API
+    const requestOptions = {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    }
+    fetch('http://127.0.0.1:5000/positions', requestOptions)
+        .then(response => response.json())
+        .then(data => setPositions(data))
+    }, [])
 
   return (
     <div>
       <MapContainer
-        center={[51.505, -0.09]}
+        center={[47.69, 37.83]}
         className='map-container'
         zoom={13}
         scrollWheelZoom={true}
@@ -67,8 +78,8 @@ function WarMap() {
           url='http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}'
           subdomains={['mt1', 'mt2', 'mt3']}
         />
-        {positions.map(({ name, position }) => (
-          <Marker icon={customIcon} key={Math.random()} position={[position.lat, position.lng]}>
+        {positions.map(({ name, type, lat, lng }) => (
+          <Marker icon={customIcon} key={Math.random()} position={[lat, lng]}>
             <Popup>{name}</Popup>
           </Marker>
         ))}

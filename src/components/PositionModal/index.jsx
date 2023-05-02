@@ -11,10 +11,17 @@ const PositionModal = ({ isOpen, closeModal, positionCoords, createMarker }) => 
   const [form] = Form.useForm()
   const handleSubmitForm = () => {
     const { name, enemy, type, count, description } = form.getFieldsValue()
+    const requestOptions = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({name, enemy, type, count, description, lat: positionCoords.lat, lng: positionCoords.lng})
+    }
+    fetch('http://127.0.0.1:5000/position', requestOptions)
+        .then(response => response.json())
+        .then(data => createMarker( data ))
+    // console.log({ name, description, type, count, enemy, positionCoords })
 
-    console.log({ name, description, type, count, enemy })
-
-    createMarker({ name, description, type, count, enemy, position: positionCoords })
+    
 
     form.resetFields()
     closeModal()
