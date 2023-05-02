@@ -1,10 +1,8 @@
 import React, { useRef, useState, useEffect } from 'react'
-import { MapContainer, Marker, Popup, TileLayer, useMapEvents } from 'react-leaflet'
-import L from 'leaflet'
+import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet'
 
+import DraggableMarker from '../Marker'
 import PositionModal from '../PositionModal'
-
-import images, { enemyImages } from '../../images'
 
 import './index.css'
 
@@ -12,9 +10,6 @@ const MIN_ZOOM = 3
 
 const MapEvents = ({ map, setMouseCoords, setModalOpen, setNewPositionCoords }) => {
   useMapEvents({
-    mousemove(e) {
-      setMouseCoords({ lat: e.latlng.lat, lng: e.latlng.lng })
-    },
     click(e) {
       setNewPositionCoords({ lat: e.latlng.lat, lng: e.latlng.lng })
       setModalOpen(true)
@@ -40,7 +35,7 @@ function WarMap() {
 
   const xLat = mouseCoords.lat.toFixed(3)
   const yLng = mouseCoords.lng.toFixed(3)
-  
+
   useEffect(() => {
     // Update the document title using the browser API
     const requestOptions = {
@@ -48,9 +43,9 @@ function WarMap() {
       headers: { 'Content-Type': 'application/json' },
     }
     fetch('http://127.0.0.1:5000/positions', requestOptions)
-        .then(response => response.json())
-        .then(data => setPositions(data))
-    }, [])
+      .then((response) => response.json())
+      .then((data) => setPositions(data))
+  }, [])
 
   return (
     <div>
@@ -66,20 +61,16 @@ function WarMap() {
           url='http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}'
           subdomains={['mt1', 'mt2', 'mt3']}
         />
-        {positions.map(({ name, type, lat, lng, enemy }) => (
-          <Marker icon={new L.Icon({
-            iconUrl: enemy ? enemyImages[type].image : images[type].image,
-            iconRetinaUrl: enemy ? enemyImages[type].image : images[type].image,
-            iconAnchor: [15, 15],
-            popupAnchor: [0, -12],
-            iconSize: new L.Point(60, 40),
-            className: 'leaflet-div-icon',
-            shadowUrl: null,
-            shadowSize: null,
-            shadowAnchor: null,
-          })} key={Math.random()} position={[lat, lng]}>
-            <Popup>{name}</Popup>
-          </Marker>
+        {positions.map(({ name, type, lat, lng, enemy, id }) => (
+          <DraggableMarker
+            name={name}
+            type={type}
+            lng={lng}
+            lat={lat}
+            enemy={enemy}
+            key={id}
+            id={id}
+          />
         ))}
         <MapEvents
           map={map}
