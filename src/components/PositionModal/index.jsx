@@ -7,7 +7,7 @@ import './index.css'
 
 const { TextArea } = Input
 
-const PositionModal = ({ isOpen, closeModal, positionCoords, createMarker }) => {
+const PositionModal = ({ isOpen, closeModal, positionCoords, createPosition }) => {
   const [form] = Form.useForm()
   const handleSubmitForm = () => {
     const { name, enemy, type, count, description } = form.getFieldsValue()
@@ -18,7 +18,7 @@ const PositionModal = ({ isOpen, closeModal, positionCoords, createMarker }) => 
     }
     fetch('http://127.0.0.1:5000/position', requestOptions)
         .then(response => response.json())
-        .then(data => createMarker( data ))
+        .then(data => createPosition ( data ))
     // console.log({ name, description, type, count, enemy, positionCoords })
 
     

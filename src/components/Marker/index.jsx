@@ -2,10 +2,11 @@ import L from 'leaflet'
 import images, { enemyImages } from '../../images'
 import { Marker, Popup } from 'react-leaflet'
 import React, { useMemo, useRef, useState } from 'react'
+import {Button} from 'antd'
 
 import './index.css'
 
-const DraggableMarker = ({ type, enemy, lat, lng, name, id }) => {
+const DraggableMarker = ({ type, enemy, lat, lng, name, id, description, count, deletePosition }) => {
   const [position, setPosition] = useState([lat, lng])
   const markerRef = useRef(null)
   const eventHandlers = useMemo(
@@ -15,19 +16,32 @@ const DraggableMarker = ({ type, enemy, lat, lng, name, id }) => {
         if (marker) {
           const newPosition = marker.getLatLng()
           const requestOptions = {
-            method: 'PUT',
+            method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ id, lat: newPosition.lat, lng: newPosition.lng }),
           }
           fetch('http://127.0.0.1:5000/position', requestOptions)
             .then((response) => response.json())
-            .then((data) => console.log(data) || setPosition([data.lat, data.lng]))
+            .then((data) => setPosition([data.lat, data.lng]))
         }
       },
     }),
     [],
   )
+  const removePosition = () => {
+    const requestOptions = {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id }),
+    }
+    fetch('http://127.0.0.1:5000/position', requestOptions)
+      .then((response) => response.json())
+      .then(() => deletePosition(id))
+  }
 
+  const editPosition = () => {
+
+  }
   return (
     <Marker
       autoPan
@@ -46,8 +60,32 @@ const DraggableMarker = ({ type, enemy, lat, lng, name, id }) => {
       position={position}
     >
       <Popup>
-        <div>
+        <div style={{textAlign: 'center', marginBottom: '10px'}}>
           {name}
+        </div>
+        <div>
+          Широта: {lat.toFixed(7)}; Довгота: {lng.toFixed(7)};
+          
+        </div>
+        <div>
+          { (count) ? 
+          <div style={{marginTop: '10px'}}>Кількість: {count}</div> :
+          <></>
+          }
+        </div>
+        <div>
+          { (description) ? 
+          <div style={{marginTop: '10px'}}>Опис: {description}</div> :
+          <></>
+          }
+        </div>
+        <div style={{marginTop: '20px', display: 'flex', justifyContent: 'space-between' }} >
+          <Button onClick={editPosition}>
+            Редагувати
+          </Button>
+          <Button danger onClick={removePosition}>
+            Видалити
+          </Button>
         </div>
       </Popup>
     </Marker>

@@ -31,10 +31,14 @@ function WarMap() {
 
   const closeModal = () => setModalOpen(false)
 
-  const createMarker = (newMarker) => setPositions((prevMarkers) => [...prevMarkers, newMarker])
-
+  const createPosition = (newPosition ) => setPositions((prevPositions) => [...prevPositions, newPosition])
+  const deletePosition = (id ) => setPositions((prevPositions) => prevPositions.filter((element) => element.id != id))
   const xLat = mouseCoords.lat.toFixed(3)
   const yLng = mouseCoords.lng.toFixed(3)
+
+  useEffect(() => {
+    const interval = setInterval(() => {setMouseCoords(map.current.get())})
+  }, [])
 
   useEffect(() => {
     // Update the document title using the browser API
@@ -61,7 +65,7 @@ function WarMap() {
           url='http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}'
           subdomains={['mt1', 'mt2', 'mt3']}
         />
-        {positions.map(({ name, type, lat, lng, enemy, id }) => (
+        {positions.map(({ name, type, lat, lng, enemy, id, description, count }) => (
           <DraggableMarker
             name={name}
             type={type}
@@ -70,6 +74,9 @@ function WarMap() {
             enemy={enemy}
             key={id}
             id={id}
+            description={description}
+            count={count}
+            deletePosition={deletePosition}
           />
         ))}
         <MapEvents
@@ -83,7 +90,7 @@ function WarMap() {
         isOpen={modalOpen}
         closeModal={closeModal}
         positionCoords={newPositionCoords}
-        createMarker={createMarker}
+        createPosition={createPosition}
       />
     </div>
   )
