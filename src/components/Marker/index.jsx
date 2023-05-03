@@ -37,15 +37,19 @@ const DraggableMarker = ({ type, enemy, lat, lng, name, id }) => {
       icon={
         new L.Icon({
           iconUrl: enemy ? enemyImages[type].image : images[type].image,
-          iconAnchor: [15, 15],
-          popupAnchor: [0, -12],
-          iconSize: new L.Point(60, 40),
+          iconAnchor: [20, 10],
+          popupAnchor: [10, -15],
+          iconSize: enemy ? new L.Point(60, 60) : new L.Point(60, 40),
           className: 'leaflet-div-icon',
         })
       }
       position={position}
     >
-      <Popup>{name}</Popup>
+      <Popup>
+        <div>
+          {name}
+        </div>
+      </Popup>
     </Marker>
   )
 }
