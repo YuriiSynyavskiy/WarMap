@@ -1,12 +1,23 @@
 import React, { useRef, useState, useEffect, useMemo } from 'react'
 import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet'
-
+import { Menu } from 'antd'
+import { SettingOutlined } from '@ant-design/icons'
 import DraggableMarker from '../Marker'
 import PositionModal from '../PositionModal'
 
 import './index.css'
 
 const MIN_ZOOM = 3
+
+function getItem(label, key, icon, children, type) {
+  return {
+    key,
+    icon,
+    children,
+    label,
+    type,
+  }
+}
 
 const MapEvents = ({ map, setMouseCoords, setModalOpen, setNewPositionCoords }) => {
   useMapEvents({
@@ -34,7 +45,9 @@ function WarMap() {
   const [positionToEdit, setPositionToEdit] = useState(null)
 
   const closeModal = () => setModalOpen(false)
-
+  const onClickMenu = (e) => {
+    console.log('click ', e)
+  }
   const fetchPositions = () => {
     const requestOptions = {
       method: 'GET',
@@ -48,7 +61,12 @@ function WarMap() {
   useEffect(() => {
     fetchPositions()
   }, [])
-
+  const menuItems = [
+    getItem('Додаткові можливості', 'sub4', <SettingOutlined />, [
+      getItem('Хронологічний режим', '1'),
+      getItem('Індивідуальний режим', '2'),
+    ])
+  ]
   const positionsMemoized = useMemo(
     () =>
       positions.map((position) => (
@@ -69,7 +87,7 @@ function WarMap() {
   console.log(positionToEdit)
 
   return (
-    <div>
+    <div style={{position: 'relative'}}>
       <MapContainer
         center={[47.69, 37.83]}
         className='map-container'
@@ -100,6 +118,27 @@ function WarMap() {
           stopEditing={() => setPositionToEdit(null)}
         />
       )}
+  <div
+    style={{
+      position: 'absolute',
+      width: '10%',
+      height: '10%',
+      top: 0,
+      right: 50,
+      zIndex: 10000
+    }}  
+  > 
+
+    <Menu
+      onClick={onClickMenu}
+      style={{
+        width: 256,
+      }}
+      mode="inline"
+      items={menuItems}
+      theme="dark"
+    />
+      </div>
     </div>
   )
 }
