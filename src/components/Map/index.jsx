@@ -63,8 +63,8 @@ function WarMap() {
     [positions],
   )
 
-  const xLat = mouseCoords.lat.toFixed(3)
-  const yLng = mouseCoords.lng.toFixed(3)
+  const xLat = mouseCoords.lat.toFixed(5)
+  const yLng = mouseCoords.lng.toFixed(5)
 
   console.log(positionToEdit)
 
