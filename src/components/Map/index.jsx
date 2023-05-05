@@ -1,7 +1,10 @@
 import React, { useRef, useState, useEffect, useMemo } from 'react'
 import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet'
+import { useNavigate } from 'react-router-dom'
 import { Menu } from 'antd'
+
 import { SettingOutlined } from '@ant-design/icons'
+
 import DraggableMarker from '../Marker'
 import PositionModal from '../PositionModal'
 
@@ -44,14 +47,16 @@ function WarMap() {
   const [positions, setPositions] = useState([])
   const [positionToEdit, setPositionToEdit] = useState(null)
 
+  const navigate = useNavigate()
+
   const closeModal = () => setModalOpen(false)
+
   const onClickMenu = (e) => {
-      
-      if(e.key === '1') {
-        console.log('click ', e)
-        // Redirect
-      }
+    if (e.key === '1') {
+      navigate('chronology')
+    }
   }
+
   const fetchPositions = () => {
     const requestOptions = {
       method: 'GET',
@@ -65,12 +70,14 @@ function WarMap() {
   useEffect(() => {
     fetchPositions()
   }, [])
+
   const menuItems = [
-    getItem('Додаткові можливості', 'sub4', <SettingOutlined />, [
+    getItem('', 'sub4', <SettingOutlined />, [
       getItem('Хронологічний режим', '1'),
       getItem('Індивідуальний режим', '2'),
-    ])
+    ]),
   ]
+
   const positionsMemoized = useMemo(
     () =>
       positions.map((position) => (
@@ -89,7 +96,7 @@ function WarMap() {
   const yLng = mouseCoords.lng.toFixed(5)
 
   return (
-    <div style={{position: 'relative'}}>
+    <div style={{ position: 'relative' }}>
       <MapContainer
         center={[47.69, 37.83]}
         className='map-container'
@@ -120,26 +127,8 @@ function WarMap() {
           stopEditing={() => setPositionToEdit(null)}
         />
       )}
-  <div
-    style={{
-      position: 'absolute',
-      width: '10%',
-      height: '10%',
-      top: 0,
-      right: 50,
-      zIndex: 10000
-    }}  
-  > 
-
-    <Menu
-      onClick={onClickMenu}
-      style={{
-        width: 256,
-      }}
-      mode="inline"
-      items={menuItems}
-      theme="dark"
-    />
+      <div className='menu-wrapper'>
+        <Menu onClick={onClickMenu} mode='inline' items={menuItems} theme='dark' />
       </div>
     </div>
   )

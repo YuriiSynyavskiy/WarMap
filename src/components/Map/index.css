@@ -1,9 +1,10 @@
-.map-container{
+.map-container {
     width: 100vw;
     height: 100vh;
     cursor: default;
 }
-.position-modal{
+
+.position-modal {
     top: 50%;
     left: 50%;
     right: auto;
@@ -11,4 +12,11 @@
     margin-right: -50%;
     transform: translate(-50%, -50%);
     z-index: 9999999;
+}
+
+.menu-wrapper {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 99999999999;
 }
