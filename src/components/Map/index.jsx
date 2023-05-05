@@ -46,7 +46,11 @@ function WarMap() {
 
   const closeModal = () => setModalOpen(false)
   const onClickMenu = (e) => {
-    console.log('click ', e)
+      
+      if(e.key === '1') {
+        console.log('click ', e)
+        // Redirect
+      }
   }
   const fetchPositions = () => {
     const requestOptions = {
@@ -83,8 +87,6 @@ function WarMap() {
 
   const xLat = mouseCoords.lat.toFixed(5)
   const yLng = mouseCoords.lng.toFixed(5)
-
-  console.log(positionToEdit)
 
   return (
     <div style={{position: 'relative'}}>
