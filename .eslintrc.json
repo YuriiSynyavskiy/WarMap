@@ -26,5 +26,6 @@
         "no-duplicate-imports": "error",
         "semi": ["error", "never"],
         "no-unused-vars": "warn"
-    }
+    },
+    "ignorePatterns": ["**/dist/*.js"]
 }

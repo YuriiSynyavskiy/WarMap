@@ -7,6 +7,7 @@ import { SettingOutlined } from '@ant-design/icons'
 
 import DraggableMarker from '../Marker'
 import PositionModal from '../PositionModal'
+import LeafletRuler from '../Ruler'
 
 import './index.css'
 
@@ -22,14 +23,22 @@ function getItem(label, key, icon, children, type) {
   }
 }
 
-const MapEvents = ({ map, setMouseCoords, setModalOpen, setNewPositionCoords }) => {
+const MapEvents = ({
+  map,
+  setMouseCoords,
+  setModalOpen,
+  setNewPositionCoords,
+  addNewPositionMode,
+}) => {
   useMapEvents({
     mousemove(e) {
       setMouseCoords({ lat: e.latlng.lat, lng: e.latlng.lng })
     },
     click(e) {
-      setNewPositionCoords({ lat: e.latlng.lat, lng: e.latlng.lng })
-      setModalOpen(true)
+      if (addNewPositionMode) {
+        setNewPositionCoords({ lat: e.latlng.lat, lng: e.latlng.lng })
+        setModalOpen(true)
+      }
     },
     zoom(e) {
       if (e.target._zoom < MIN_ZOOM) map.current.setZoom(MIN_ZOOM)
@@ -46,16 +55,9 @@ function WarMap() {
   const [modalOpen, setModalOpen] = useState(false)
   const [positions, setPositions] = useState([])
   const [positionToEdit, setPositionToEdit] = useState(null)
+  const [addNewPositionMode, setAddNewPositionMode] = useState(false)
 
   const navigate = useNavigate()
-
-  const closeModal = () => setModalOpen(false)
-
-  const onClickMenu = (e) => {
-    if (e.key === '1') {
-      navigate('chronology')
-    }
-  }
 
   const fetchPositions = () => {
     const requestOptions = {
@@ -71,12 +73,39 @@ function WarMap() {
     fetchPositions()
   }, [])
 
+  useEffect(() => {
+    if (!map.current) return
+
+    const [ruler] = document.getElementsByClassName('leaflet-ruler')
+
+    const listener = () => {
+      setAddNewPositionMode(false)
+    }
+
+    ruler.addEventListener('click', listener)
+
+    return () => {
+      ruler.removeEventListener('click', listener)
+    }
+  }, [map.current])
+
+  const closeModal = () => setModalOpen(false)
+
   const menuItems = [
     getItem('', 'sub4', <SettingOutlined />, [
       getItem('Хронологічний режим', '1'),
       getItem('Індивідуальний режим', '2'),
+      getItem(`Режим додавання позначок: ${addNewPositionMode ? 'Ввімкнено' : 'Вимкнено'}`, '3'),
     ]),
   ]
+
+  const onClickMenu = (e) => {
+    if (e.key === '1') {
+      navigate('chronology')
+    } else if (e.key === '3') {
+      setAddNewPositionMode((prevState) => !prevState)
+    }
+  }
 
   const positionsMemoized = useMemo(
     () =>
@@ -115,7 +144,9 @@ function WarMap() {
           setMouseCoords={setMouseCoords}
           setModalOpen={setModalOpen}
           setNewPositionCoords={setNewPositionCoords}
+          addNewPositionMode={addNewPositionMode}
         />
+        <LeafletRuler />
       </MapContainer>
       {modalOpen && (
         <PositionModal
