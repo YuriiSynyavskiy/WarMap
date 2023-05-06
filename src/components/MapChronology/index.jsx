@@ -1,12 +1,11 @@
 import React, { useRef, useState, useEffect, useMemo } from 'react'
 import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet'
 import { useNavigate } from 'react-router-dom'
-import { Menu } from 'antd'
+import { Menu, DatePicker } from 'antd'
 
 import { SettingOutlined } from '@ant-design/icons'
 
 import DraggableMarker from '../Marker'
-import PositionModal from '../PositionModal'
 
 import './index.css'
 
@@ -22,14 +21,10 @@ function getItem(label, key, icon, children, type) {
   }
 }
 
-const MapEvents = ({ map, setMouseCoords, setModalOpen, setNewPositionCoords }) => {
+const MapEvents = ({ map, setMouseCoords }) => {
   useMapEvents({
     mousemove(e) {
       setMouseCoords({ lat: e.latlng.lat, lng: e.latlng.lng })
-    },
-    click(e) {
-      setNewPositionCoords({ lat: e.latlng.lat, lng: e.latlng.lng })
-      setModalOpen(true)
     },
     zoom(e) {
       if (e.target._zoom < MIN_ZOOM) map.current.setZoom(MIN_ZOOM)
@@ -38,18 +33,14 @@ const MapEvents = ({ map, setMouseCoords, setModalOpen, setNewPositionCoords }) 
   return false
 }
 
-function WarMap() {
+function WarMapChronology() {
   const map = useRef()
 
   const [mouseCoords, setMouseCoords] = useState({ lat: 47.69, lng: 37.83 })
-  const [newPositionCoords, setNewPositionCoords] = useState()
-  const [modalOpen, setModalOpen] = useState(false)
   const [positions, setPositions] = useState([])
-  const [positionToEdit, setPositionToEdit] = useState(null)
 
   const navigate = useNavigate()
 
-  const closeModal = () => setModalOpen(false)
 
   const onClickMenu = (e) => {
     if (e.key === '1') {
@@ -57,12 +48,13 @@ function WarMap() {
     }
   }
 
-  const fetchPositions = () => {
+  const fetchPositions = (date) => {
     const requestOptions = {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ date })
     }
-    fetch('http://127.0.0.1:5000/positions', requestOptions)
+    fetch('http://127.0.0.1:5000/chronology', requestOptions)
       .then((response) => response.json())
       .then((data) => setPositions(data))
   }
@@ -71,12 +63,6 @@ function WarMap() {
     fetchPositions()
   }, [])
 
-  const menuItems = [
-    getItem('', 'sub4', <SettingOutlined />, [
-      getItem('Хронологічний режим', '1'),
-      getItem('Індивідуальний режим', '2'),
-    ]),
-  ]
 
   const positionsMemoized = useMemo(
     () =>
@@ -85,9 +71,7 @@ function WarMap() {
           position={position}
           key={position.id}
           fetchPositions={fetchPositions}
-          setModalOpen={setModalOpen}
-          setPositionToEdit={() => setPositionToEdit(position)}
-          editableMode={true}
+          editableMode={false}
         />
       )),
     [positions],
@@ -114,25 +98,17 @@ function WarMap() {
         <MapEvents
           map={map}
           setMouseCoords={setMouseCoords}
-          setModalOpen={setModalOpen}
-          setNewPositionCoords={setNewPositionCoords}
         />
       </MapContainer>
-      {modalOpen && (
-        <PositionModal
-          isOpen={modalOpen}
-          closeModal={closeModal}
-          positionCoords={newPositionCoords}
-          fetchPositions={fetchPositions}
-          positionToEdit={positionToEdit}
-          stopEditing={() => setPositionToEdit(null)}
-        />
-      )}
       <div className='menu-wrapper'>
-        <Menu onClick={onClickMenu} mode='inline' items={menuItems} theme='dark' />
+        <Menu onClick={onClickMenu} mode='inline' theme='dark'>
+        <Menu.SubMenu icon={<SettingOutlined />}>
+            <Menu.Item className='menu-item'><DatePicker /></Menu.Item>
+        </Menu.SubMenu>
+        </Menu>
       </div>
     </div>
   )
 }
 
-export default WarMap
+export default WarMapChronology

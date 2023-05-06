@@ -1,0 +1,12 @@
+.map-container {
+    width: 100vw;
+    height: 100vh;
+    cursor: default;
+}
+
+.menu-wrapper {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 99999999999;
+}
