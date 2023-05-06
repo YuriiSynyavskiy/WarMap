@@ -10,6 +10,7 @@ import PositionModal from '../PositionModal'
 import LeafletRuler from '../Ruler'
 
 import './index.css'
+import modifyIcon from '../../images/modify-item.png'
 
 const MIN_ZOOM = 3
 
@@ -56,7 +57,7 @@ function WarMap() {
   const [positions, setPositions] = useState([])
   const [positionToEdit, setPositionToEdit] = useState(null)
   const [addNewPositionMode, setAddNewPositionMode] = useState(false)
-
+  const changePositionMode = () => {setAddNewPositionMode((prevState) => !prevState)}
   const navigate = useNavigate()
 
   const fetchPositions = () => {
@@ -94,16 +95,13 @@ function WarMap() {
   const menuItems = [
     getItem('', 'sub4', <SettingOutlined />, [
       getItem('Хронологічний режим', '1'),
-      getItem('Індивідуальний режим', '2'),
-      getItem(`Режим додавання позначок: ${addNewPositionMode ? 'Ввімкнено' : 'Вимкнено'}`, '3'),
+      getItem('Індивідуальний режим', '2')
     ]),
   ]
 
   const onClickMenu = (e) => {
     if (e.key === '1') {
       navigate('chronology')
-    } else if (e.key === '3') {
-      setAddNewPositionMode((prevState) => !prevState)
     }
   }
 
@@ -161,6 +159,9 @@ function WarMap() {
       )}
       <div className='menu-wrapper'>
         <Menu onClick={onClickMenu} mode='inline' items={menuItems} theme='dark' />
+      </div>
+      <div className='modify-wrapper' onClick={changePositionMode}>
+        <img src={modifyIcon} className='modify-wrapper-image' alt='Modify Map'  />
       </div>
     </div>
   )

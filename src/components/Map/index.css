@@ -20,3 +20,28 @@
     right: 0;
     z-index: 99999999999;
 }
+
+
+.modify-wrapper {
+    position: absolute;
+    top: 125px;
+    left: 10px;
+    z-index: 99999999999;
+    background-color: white;
+    height: 35px;
+    width: 35px;
+    border: 1px solid gray;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modify-wrapper-image {
+    width: 24px;
+    height: 24px;
+}
+
+.modify-wrapper-image:hover {
+    src: url("../../images/modify-item-hover.png");
+}
