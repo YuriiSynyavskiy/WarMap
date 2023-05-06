@@ -6,7 +6,7 @@ import { Button } from 'antd'
 
 import './index.css'
 
-const DraggableMarker = ({ position, fetchPositions, setModalOpen, setPositionToEdit }) => {
+const DraggableMarker = ({ position, fetchPositions, setModalOpen, setPositionToEdit, editableMode }) => {
   const { id, name, enemy, type, lat, lng, count, description } = position
 
   const markerRef = useRef(null)
@@ -71,12 +71,14 @@ const DraggableMarker = ({ position, fetchPositions, setModalOpen, setPositionTo
         <div>
           {description ? <div style={{ marginTop: '10px' }}>Опис: {description}</div> : <></>}
         </div>
+        {editableMode?
         <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'space-between' }}>
           <Button onClick={editPosition}>Редагувати</Button>
           <Button danger onClick={removePosition}>
             Видалити
           </Button>
-        </div>
+        </div>:<></>
+        }
       </Popup>
     </Marker>
   )

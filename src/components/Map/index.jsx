@@ -116,6 +116,7 @@ function WarMap() {
           fetchPositions={fetchPositions}
           setModalOpen={setModalOpen}
           setPositionToEdit={() => setPositionToEdit(position)}
+          editableMode={true}
         />
       )),
     [positions],
