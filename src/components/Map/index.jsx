@@ -1,16 +1,15 @@
 import React, { useRef, useState, useEffect, useMemo } from 'react'
 import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet'
-import { useNavigate } from 'react-router-dom'
-import { Menu } from 'antd'
+import { Menu, DatePicker } from 'antd'
 
 import { SettingOutlined } from '@ant-design/icons'
 
 import DraggableMarker from '../Marker'
 import PositionModal from '../PositionModal'
 import LeafletRuler from '../Ruler'
-
 import './index.css'
 import modifyIcon from '../../images/modify-item.png'
+import moment from 'moment'
 
 const MIN_ZOOM = 3
 
@@ -57,8 +56,8 @@ function WarMap() {
   const [positions, setPositions] = useState([])
   const [positionToEdit, setPositionToEdit] = useState(null)
   const [addNewPositionMode, setAddNewPositionMode] = useState(false)
+  const [chronologicalMode, setChronologicalMode] = useState(false)
   const changePositionMode = () => {setAddNewPositionMode((prevState) => !prevState)}
-  const navigate = useNavigate()
 
   const fetchPositions = () => {
     const requestOptions = {
@@ -66,6 +65,16 @@ function WarMap() {
       headers: { 'Content-Type': 'application/json' },
     }
     fetch('http://127.0.0.1:5000/positions', requestOptions)
+      .then((response) => response.json())
+      .then((data) => setPositions(data))
+  }
+
+  const fetchChronologicalPositions = (date) => {
+    const requestOptions = {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    }
+    fetch('http://127.0.0.1:5000/chronology?date=' + date, requestOptions)
       .then((response) => response.json())
       .then((data) => setPositions(data))
   }
@@ -94,14 +103,27 @@ function WarMap() {
 
   const menuItems = [
     getItem('', 'sub4', <SettingOutlined />, [
-      getItem('Хронологічний режим', '1'),
-      getItem('Індивідуальний режим', '2')
+      getItem('Хронологічний режим', 'chronologicalMode'),
+      getItem('Індивідуальний режим', 'individualMode')
     ]),
   ]
 
   const onClickMenu = (e) => {
-    if (e.key === '1') {
-      navigate('chronology')
+    if (e.key === 'chronologicalMode') {
+      setChronologicalMode(true)
+      fetchChronologicalPositions(moment().format('YYYY-MM-DD'))
+    }
+    else if (e.key === 'defaultMode') {
+      setChronologicalMode(false)
+      fetchPositions()
+    }
+  }
+
+  const onChangeDate = (date, dateString) => {
+    
+    if (dateString) {
+      console.log(dateString)
+      fetchChronologicalPositions(dateString)
     }
   }
 
@@ -114,7 +136,8 @@ function WarMap() {
           fetchPositions={fetchPositions}
           setModalOpen={setModalOpen}
           setPositionToEdit={() => setPositionToEdit(position)}
-          editableMode={true}
+          editableMode={!chronologicalMode}
+          draggable={!chronologicalMode}
         />
       )),
     [positions],
@@ -147,7 +170,7 @@ function WarMap() {
         />
         <LeafletRuler />
       </MapContainer>
-      {modalOpen && (
+      {!chronologicalMode && modalOpen && (
         <PositionModal
           isOpen={modalOpen}
           closeModal={closeModal}
@@ -157,12 +180,29 @@ function WarMap() {
           stopEditing={() => setPositionToEdit(null)}
         />
       )}
-      <div className='menu-wrapper'>
-        <Menu onClick={onClickMenu} mode='inline' items={menuItems} theme='dark' />
-      </div>
-      <div className='modify-wrapper' onClick={changePositionMode}>
-        <img src={modifyIcon} className='modify-wrapper-image' alt='Modify Map'  />
-      </div>
+      {!chronologicalMode ? (
+        <>
+          <div className='menu-wrapper'>
+            <Menu onClick={onClickMenu} mode='inline' items={menuItems} theme='dark' />
+          </div>
+          <div className='modify-wrapper' onClick={changePositionMode}>
+            <img src={modifyIcon} className='modify-wrapper-image' alt='Modify Map'  />
+          </div>
+        </>
+      ) : (
+        <div className='menu-wrapper'>
+          <Menu onClick={onClickMenu} mode='inline' theme='dark' defaultOpenKeys={['sub1']}>
+            <Menu.SubMenu icon={<SettingOutlined />} key='sub1'>
+              <Menu.Item className='menu-item' key='defaultMode'>Звичайний режим</Menu.Item>
+              <Menu.Item className='menu-item' key='individualMode'>Індивідуальний режим</Menu.Item>
+              <Menu.Item className='menu-item' key='datePicker'>
+                <DatePicker 
+                  onChange={onChangeDate}/>
+              </Menu.Item>
+            </Menu.SubMenu>
+          </Menu>
+        </div>
+      )}
     </div>
   )
 }
