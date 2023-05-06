@@ -21,8 +21,7 @@
     z-index: 99999999999;
 }
 
-
-.modify-wrapper {
+.modify-wrapper, .modify-wrapper-active {
     position: absolute;
     top: 125px;
     left: 10px;
@@ -43,5 +42,13 @@
 }
 
 .modify-wrapper-image:hover {
-    src: url("../../images/modify-item-hover.png");
+    content: url("../../images/modify-item-hover.png");
+}
+
+.modify-wrapper-active {
+    border: 2px solid chartreuse;
+}
+
+.modify-wrapper-active .modify-wrapper-image {
+    content: url("../../images/modify-item-hover.png");
 }

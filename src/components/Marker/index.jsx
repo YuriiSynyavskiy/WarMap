@@ -6,7 +6,14 @@ import { Button } from 'antd'
 
 import './index.css'
 
-const DraggableMarker = ({ position, fetchPositions, setModalOpen, setPositionToEdit, editableMode, draggable }) => {
+const DraggableMarker = ({
+  position,
+  fetchPositions,
+  setModalOpen,
+  setPositionToEdit,
+  editableMode,
+  draggable,
+}) => {
   const { id, name, enemy, type, lat, lng, count, description } = position
 
   const markerRef = useRef(null)
@@ -48,7 +55,7 @@ const DraggableMarker = ({ position, fetchPositions, setModalOpen, setPositionTo
   return (
     <Marker
       autoPan
-      graggable={draggable}
+      draggable={draggable}
       eventHandlers={eventHandlers}
       ref={markerRef}
       icon={
@@ -71,14 +78,16 @@ const DraggableMarker = ({ position, fetchPositions, setModalOpen, setPositionTo
         <div>
           {description ? <div style={{ marginTop: '10px' }}>Опис: {description}</div> : <></>}
         </div>
-        {editableMode?
-        <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'space-between' }}>
-          <Button onClick={editPosition}>Редагувати</Button>
-          <Button danger onClick={removePosition}>
-            Видалити
-          </Button>
-        </div>:<></>
-        }
+        {editableMode ? (
+          <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'space-between' }}>
+            <Button onClick={editPosition}>Редагувати</Button>
+            <Button danger onClick={removePosition}>
+              Видалити
+            </Button>
+          </div>
+        ) : (
+          <></>
+        )}
       </Popup>
     </Marker>
   )

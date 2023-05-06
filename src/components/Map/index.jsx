@@ -1,6 +1,8 @@
 import React, { useRef, useState, useEffect, useMemo } from 'react'
 import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet'
 import { Menu, DatePicker } from 'antd'
+import dayjs from 'dayjs'
+import moment from 'moment'
 
 import { SettingOutlined } from '@ant-design/icons'
 
@@ -8,8 +10,8 @@ import DraggableMarker from '../Marker'
 import PositionModal from '../PositionModal'
 import LeafletRuler from '../Ruler'
 import './index.css'
+
 import modifyIcon from '../../images/modify-item.png'
-import moment from 'moment'
 
 const MIN_ZOOM = 3
 
@@ -57,7 +59,6 @@ function WarMap() {
   const [positionToEdit, setPositionToEdit] = useState(null)
   const [addNewPositionMode, setAddNewPositionMode] = useState(false)
   const [chronologicalMode, setChronologicalMode] = useState(false)
-  const changePositionMode = () => {setAddNewPositionMode((prevState) => !prevState)}
 
   const fetchPositions = () => {
     const requestOptions = {
@@ -99,12 +100,14 @@ function WarMap() {
     }
   }, [map.current])
 
+  const changePositionMode = () => setAddNewPositionMode((prevState) => !prevState)
+
   const closeModal = () => setModalOpen(false)
 
   const menuItems = [
     getItem('', 'sub4', <SettingOutlined />, [
       getItem('Хронологічний режим', 'chronologicalMode'),
-      getItem('Індивідуальний режим', 'individualMode')
+      getItem('Індивідуальний режим', 'individualMode'),
     ]),
   ]
 
@@ -112,17 +115,14 @@ function WarMap() {
     if (e.key === 'chronologicalMode') {
       setChronologicalMode(true)
       fetchChronologicalPositions(moment().format('YYYY-MM-DD'))
-    }
-    else if (e.key === 'defaultMode') {
+    } else if (e.key === 'defaultMode') {
       setChronologicalMode(false)
       fetchPositions()
     }
   }
 
   const onChangeDate = (date, dateString) => {
-    
     if (dateString) {
-      console.log(dateString)
       fetchChronologicalPositions(dateString)
     }
   }
@@ -185,19 +185,32 @@ function WarMap() {
           <div className='menu-wrapper'>
             <Menu onClick={onClickMenu} mode='inline' items={menuItems} theme='dark' />
           </div>
-          <div className='modify-wrapper' onClick={changePositionMode}>
-            <img src={modifyIcon} className='modify-wrapper-image' alt='Modify Map'  />
+          <div
+            className={addNewPositionMode ? 'modify-wrapper-active' : 'modify-wrapper'}
+            onClick={changePositionMode}
+          >
+            <img src={modifyIcon} className='modify-wrapper-image' alt='Modify Map' />
           </div>
         </>
       ) : (
         <div className='menu-wrapper'>
           <Menu onClick={onClickMenu} mode='inline' theme='dark' defaultOpenKeys={['sub1']}>
             <Menu.SubMenu icon={<SettingOutlined />} key='sub1'>
-              <Menu.Item className='menu-item' key='defaultMode'>Звичайний режим</Menu.Item>
-              <Menu.Item className='menu-item' key='individualMode'>Індивідуальний режим</Menu.Item>
-              <Menu.Item className='menu-item' key='datePicker'>
-                <DatePicker 
-                  onChange={onChangeDate}/>
+              <Menu.Item className='menu-item' key='defaultMode'>
+                Звичайний режим
+              </Menu.Item>
+              <Menu.Item className='menu-item' key='individualMode'>
+                Індивідуальний режим
+              </Menu.Item>
+              <Menu.Item disabled className='menu-item'>
+                <p>Виберіть дату:</p>
+              </Menu.Item>
+              <Menu.Item disabled className='menu-item' key='datePicker'>
+                <DatePicker
+                  disabledDate={(date) => date > dayjs()}
+                  defaultValue={dayjs()}
+                  onChange={onChangeDate}
+                />
               </Menu.Item>
             </Menu.SubMenu>
           </Menu>
