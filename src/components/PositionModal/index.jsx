@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, Form, Input, Select, Modal, Switch, InputNumber } from 'antd'
+import { Button, Form, Input, Select, Modal, Switch, InputNumber, Radio } from 'antd'
 
 import Images from '../../images'
 
@@ -58,6 +58,9 @@ const PositionModal = ({
     closeModal()
   }
 
+  const onChangeType = (e) => {
+    console.log(e)
+  }
   return (
     <div>
       <Modal
@@ -81,6 +84,16 @@ const PositionModal = ({
             positionToEdit || { name: '', enemy: false, type: 1, count: 1, description: '' }
           }
         >
+          <Form.Item name="landmark" className='ant-select-item-option-content'>
+          <Radio.Group
+            options={[{ label: 'Позиція', value: 'position' }, { label: 'Орієнтир', value: 'landmark' }]}
+            onChange={onChangeType}
+            optionType="button"
+            buttonStyle="solid"
+            defaultValue="position"
+            style={{marginTop: '10px'}}
+          />
+          </Form.Item>
           <Form.Item name='name' label="Ім'я позиції">
             <Input type='text' name='name' id='name' placeholder="Введіть ім'я позиції" />
           </Form.Item>

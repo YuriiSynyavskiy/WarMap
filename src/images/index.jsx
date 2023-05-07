@@ -3,6 +3,7 @@ import allyInfantry from './ally-infantry.png'
 
 import enemyArtillery from './enemy-artillery.png'
 import enemyInfantry from './enemy-infantry.png'
+import landmark from './obstacle.png'
 
 export default [
   { image: allyArtillery, name: 'Артилерія' },
@@ -12,4 +13,5 @@ export default [
 export const enemyImages = [
   { image: enemyArtillery, name: 'Ворожа Артилерія' },
   { image: enemyInfantry, name: 'Ворожа Піхота' },
+  { image: landmark, name: 'Орієнтир' },
 ]
