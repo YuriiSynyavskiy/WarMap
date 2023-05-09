@@ -1,17 +1,19 @@
 import React, { useRef, useState, useEffect, useMemo } from 'react'
 import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet'
 import { Menu, DatePicker } from 'antd'
+import { SettingOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
 import moment from 'moment'
 
-import { SettingOutlined } from '@ant-design/icons'
+import DraggableMarker from '../../components/Marker'
+import PositionModal from '../../components/PositionModal'
+import LeafletRuler from '../../components/Ruler'
 
-import DraggableMarker from '../Marker'
-import PositionModal from '../PositionModal'
-import LeafletRuler from '../Ruler'
 import './index.css'
 
 import modifyIcon from '../../images/modify-item.png'
+
+import request from '../../utils/requestFactory'
 
 const MIN_ZOOM = 3
 
@@ -61,23 +63,13 @@ function WarMap() {
   const [chronologicalMode, setChronologicalMode] = useState(false)
 
   const fetchPositions = () => {
-    const requestOptions = {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-    }
-    fetch('http://127.0.0.1:5000/positions', requestOptions)
-      .then((response) => response.json())
-      .then((data) => setPositions(data))
+    request({ endpoint: 'positions', method: 'GET' }).then((data) => setPositions(data))
   }
 
   const fetchChronologicalPositions = (date) => {
-    const requestOptions = {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-    }
-    fetch('http://127.0.0.1:5000/chronology?date=' + date, requestOptions)
-      .then((response) => response.json())
-      .then((data) => setPositions(data))
+    request({ endpoint: `chronology?date=${date}`, method: 'GET' }).then((data) =>
+      setPositions(data),
+    )
   }
 
   useEffect(() => {
@@ -105,10 +97,7 @@ function WarMap() {
   const closeModal = () => setModalOpen(false)
 
   const menuItems = [
-    getItem('', 'sub4', <SettingOutlined />, [
-      getItem('Хронологічний режим', 'chronologicalMode'),
-      getItem('Індивідуальний режим', 'individualMode'),
-    ]),
+    getItem('', 'sub4', <SettingOutlined />, [getItem('Хронологічний режим', 'chronologicalMode')]),
   ]
 
   const onClickMenu = (e) => {

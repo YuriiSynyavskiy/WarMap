@@ -3,6 +3,8 @@ import { Button, Form, Input, Select, Modal, Switch, Radio } from 'antd'
 
 import { allyImages, countsAlly } from '../../images'
 
+import request from '../../utils/requestFactory'
+
 import './index.css'
 
 const { TextArea } = Input
@@ -56,14 +58,11 @@ const PositionModal = ({
       newPosition.lng = positionCoords.lng
     }
 
-    const requestOptions = {
+    request({
+      endpoint: 'position',
       method: positionToEdit ? 'PUT' : 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(newPosition),
-    }
-    fetch('http://127.0.0.1:5000/position', requestOptions)
-      .then((response) => response.json())
-      .then(() => fetchPositions())
+      data: newPosition,
+    }).then(() => fetchPositions())
 
     form.resetFields()
 

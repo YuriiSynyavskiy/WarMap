@@ -13,6 +13,8 @@ import {
   landmark,
 } from '../../images'
 
+import request from '../../utils/requestFactory'
+
 import './index.css'
 
 const DraggableMarker = ({
@@ -55,28 +57,22 @@ const DraggableMarker = ({
         const marker = markerRef.current
         if (marker) {
           const newPosition = marker.getLatLng()
-          const requestOptions = {
+          request({
+            endpoint: 'position',
             method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id, lat: newPosition.lat, lng: newPosition.lng }),
-          }
-          fetch('http://127.0.0.1:5000/position', requestOptions)
-            .then((response) => response.json())
-            .then(() => fetchPositions())
+            data: { id, lat: newPosition.lat, lng: newPosition.lng },
+          }).then(() => fetchPositions())
         }
       },
     }),
     [],
   )
   const removePosition = () => {
-    const requestOptions = {
+    request({
+      endpoint: 'position',
       method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id }),
-    }
-    fetch('http://127.0.0.1:5000/position', requestOptions)
-      .then((response) => response.json())
-      .then(() => fetchPositions())
+      data: { id },
+    }).then(() => fetchPositions())
   }
 
   const editPosition = () => {
